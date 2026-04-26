@@ -1,0 +1,185 @@
+CREATE TABLE personal (
+    personal_id    NUMBER(5) PRIMARY KEY,
+    first_name     VARCHAR(7),
+    last_name      VARCHAR(10),
+    dob            DATE,
+    nationality    VARCHAR(6),
+    blood_group    VARCHAR(8)
+);
+
+CREATE TABLE address (
+    personal_id       NUMBER(10),
+    permanent_address VARCHAR(23),
+    current_address   VARCHAR(23),
+    address_type      VARCHAR(20),
+    CONSTRAINT fk_address_personal FOREIGN KEY (personal_id)
+        REFERENCES personal(personal_id)
+);
+
+CREATE TABLE contact (
+    personal_id       NUMBER(18),
+    primary_contact   NUMBER(11),
+    secondary_contact NUMBER(15),
+    home_contact      NUMBER(17),
+    CONSTRAINT fk_contact_personal FOREIGN KEY (personal_id)
+        REFERENCES personal(personal_id)
+);
+
+CREATE TABLE education (
+    personal_id     NUMBER(9),
+    institute_name  VARCHAR(15),
+    field_of_study  VARCHAR(15),
+    degree          VARCHAR(20),
+    start_date      DATE,
+    end_date        DATE,
+    grade           VARCHAR(3),
+    CONSTRAINT fk_education_personal FOREIGN KEY (personal_id)
+        REFERENCES personal(personal_id)
+);
+
+CREATE TABLE medical_records (
+    personal_id   NUMBER(8),
+    condition_name VARCHAR(18),
+    treatment     VARCHAR(17),
+    doctor_name   VARCHAR(19),
+    hospital_name VARCHAR(20),
+    CONSTRAINT fk_medical_personal FOREIGN KEY (personal_id)
+        REFERENCES personal(personal_id)
+);
+
+CREATE TABLE document (
+    personal_id     NUMBER(9),
+    document_type   VARCHAR(15),
+    issued_date     DATE,
+    expiry_date     DATE,
+    document_number NUMBER(10),
+    CONSTRAINT fk_document_personal FOREIGN KEY (personal_id)
+        REFERENCES personal(personal_id)
+);
+
+
+
+ALTER TABLE personal_info ADD(
+favourite_colour  VARCHAR(5)
+);
+
+ALTER TABLE personal_info DROP(
+favourite_colour  VARCHAR(5)
+);
+
+
+
+SELECT personal_id
+FROM personal_info;
+
+SELECT first_name
+FROM personal_info
+WHERE first_name LIKE 'A%';
+
+SELECT first_name
+FROM personal_info
+WHERE first_name LIKE 'A%'
+OR first_name LIKE 'B%';
+
+
+
+
+SELECT price
+FROM product
+WHERE price < 5;
+
+SELECT *
+FROM product
+WHERE price IN ( 10, 20 );
+
+SELECT *
+FROM product
+WHERE price < 10
+AND price > 20 ;
+
+SELECT *
+FROM product
+WHERE price BETWEEN 10 AND 20;
+
+
+
+SELECT p.first_name , p.last_name
+FROM personal_info p;
+
+SELECT personal_id
+FROM personam_info
+ORDER BY personal_id DESC;
+
+
+
+CREATE OR REPLACE TYPE address_type AS OBJECT(
+street   VARCHARA(15),
+city      VARCHAR(16),
+country  VARCHAR(17)
+);
+/
+SHOW ERROR
+
+CREATE OR REPLACE TYPE document_type AS OBJECT(
+document_type   VARCHAR(25),
+document_number    NUMBER(15),
+issued_date DATE,
+expire_date DATE
+);
+/
+SHOW ERROR
+
+CREATE TABLE personal (
+    personal_id    NUMBER(9) PRIMARY KEY,
+    first_name     VARCHAR(13),
+    last_name      VARCHAR(11),
+    dob            DATE,
+    address  address_type,
+    documents  document_type);
+
+
+CREATE TABLE sites(
+site_id  NUMBER(6),
+address address_type
+);
+
+CREATE OR REPLACE TYPE company_type AS OBJECT(
+company_name  VARCHARA(20),
+training_budget      NUMBER(10,2),
+address address_type
+);
+/
+
+
+
+CREATE OR REPLACE TYPE address_type AS OBJECT(
+street   VARCHAR(10),
+city      VARCHAR(20),
+country  VARCHAR(10)
+);
+/
+SHOW ERROR
+ 
+CREATE TABLE personal_info(
+ID  NUMBER(5),
+name  VARCHAR(15),
+address  REF address_type  SCOPE  IS  address);
+
+
+CREATE TABLE instructors(
+instructor_id NUMBER(8),
+address  REF address_type SCOPE IS addresses);
+
+ALTER TABLE instructors
+ADD(address REF address_type SCOPE IS addresses);
+
+
+CREATE TYPE address_varray_type AS
+VARRAY(5) OF VARCHAR(5);
+
+CREATE TABLE sites(
+site_id NUMBER(9),
+classroom classroom_varray_type);
+
+ALTER TABLE sites
+ADD (classroom classroom_varray_type);
