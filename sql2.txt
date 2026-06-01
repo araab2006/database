@@ -1,0 +1,598 @@
+CREATE OR REPLACE TYPE borrower_address_type AS OBJECT (
+    street VARCHAR2(25),
+    city VARCHAR2(25),
+    country VARCHAR2(25)
+);
+/
+
+CREATE OR REPLACE TYPE library_room_type AS OBJECT (
+    room_number NUMBER,
+    capacity NUMBER,
+    description VARCHAR2(50)
+);
+/
+
+CREATE OR REPLACE TYPE library_room_varray_type AS VARRAY(10) OF library_room_type;
+/
+
+CREATE OR REPLACE TYPE library_card_address_type AS OBJECT (
+    street VARCHAR2(25),
+    city VARCHAR2(25),
+    country VARCHAR2(25)
+);
+/
+
+CREATE TABLE card_addresses OF library_card_address_type;
+
+CREATE TABLE borrowers (
+    borrower_id NUMBER(6),
+    borrower_name VARCHAR2(25),
+    library_card_address REF library_card_address_type SCOPE IS card_addresses
+);
+
+CREATE OR REPLACE TYPE region_type AS OBJECT (
+    region VARCHAR2(25),
+    country VARCHAR2(25)
+);
+/
+
+CREATE TABLE regions OF region_type;
+
+ALTER TABLE library_branches ADD (region_ref REF region_type SCOPE IS regions);
+
+INSERT INTO borrowers VALUES (101, 'JOHN DOE', 
+    (SELECT REF(b) FROM card_addresses b WHERE b.street = '111 BAY STATE ROAD'));
+
+SELECT library_card_address FROM borrowers;
+
+SELECT DEREF(library_card_address) FROM borrowers;
+
+SELECT b.borrower_name, DEREF(b.library_card_address).street FROM borrowers b;
+
+CREATE OR REPLACE TYPE social_media_type AS OBJECT (
+    media_name VARCHAR2(25),
+    contact VARCHAR2(50)
+);
+/
+
+CREATE OR REPLACE TYPE social_media_table_type AS TABLE OF social_media_type;
+/
+
+CREATE TABLE adverts (
+    advert_id NUMBER(6),
+    advert_title VARCHAR2(50),
+    description VARCHAR2(25),
+    social_media_used social_media_table_type
+)
+NESTED TABLE social_media_used STORE AS social_media_store_tab;
+
+INSERT INTO adverts VALUES (1, 'Reading Course', 'Advanced Reading', 
+    social_media_table_type(
+        social_media_type('FACEBOOK', '@readingclub'),
+        social_media_type('TWITTER', '#books')
+    ));
+
+SELECT a.advert_title, s.media_name, s.contact
+FROM adverts a, TABLE(a.social_media_used) s;
+
+INSERT INTO TABLE(SELECT social_media_used FROM adverts WHERE advert_id=1)
+VALUES (social_media_type('INSTAGRAM', '@libraryhub'));
+
+DROP TABLE borrowers;
+
+DROP TYPE library_card_address_type;
+
+DROP TYPE social_media_table_type;
+
+BEGIN
+    EXECUTE IMMEDIATE 'ALTER TABLE members DROP CONSTRAINT ck_member_firstname';
+EXCEPTION
+    WHEN OTHERS THEN NULL;
+END;
+/
+
+DROP TABLE loans;
+DROP TABLE book_offerings;
+DROP TABLE books;
+
+INSERT INTO publishers (publisher_id, publisher_name, city, industry, no_employees, revenue, training_budget)
+VALUES (80, 'PENGUIN', 'LONDON', 'PUBLISHING', 5000, 50000000, 500000.00);
+
+INSERT INTO members (member_id, member_firstname, member_surname, publisher_id)
+VALUES (9999, 'JOHN', 'SMITH', 20);
+
+UPDATE members SET address = 
+    (SELECT REF(a) FROM addresses a WHERE a.street='111 BAY STATE ROAD')
+WHERE member_id = 9999;
+
+INSERT INTO library_branches (branch_id, address, library_room, location) VALUES (
+    9, borrower_address_type('123 MAIN ST', 'LONDON', 'UK'),
+    library_room_varray_type (
+        library_room_type(1, 20, NULL),
+        library_room_type(2, 25, NULL)
+    ),
+    'UK EAST'
+);
+
+INSERT INTO adverts VALUES (10, 'Oracle Reading', '5 Day Course',
+    social_media_table_type(
+        social_media_type('LINKEDIN', 'oracle.reading'),
+        social_media_type('YOUTUBE', 'oraclechannel')
+    ));
+
+INSERT INTO borrowers VALUES (201, 'ABC CORP', 
+    library_card_address_type('123 BUSINESS RD', 'CHICAGO', 'USA'));
+
+CREATE TABLE publishers_archive AS SELECT * FROM publishers WHERE 1=0;
+
+INSERT INTO publishers_archive 
+SELECT * FROM publishers WHERE training_budget > 100000;
+
+BEGIN
+    EXECUTE IMMEDIATE 'ALTER TABLE members ADD (address REF borrower_address_type)';
+EXCEPTION
+    WHEN OTHERS THEN NULL;
+END;
+/
+
+UPDATE members 
+SET address = (SELECT REF(a) FROM addresses a WHERE a.street='7500 IMPERIAL BLVD')
+WHERE member_id = 1111;
+
+UPDATE librarians 
+SET address = (SELECT REF(a) FROM addresses a WHERE a.city='LONDON')
+WHERE librarian_id = 835;
+
+UPDATE members SET address = NULL WHERE member_id = 9999;
+
+UPDATE members m
+SET m.address = (SELECT REF(a) FROM addresses a WHERE a.street = '177 AIRPORT ROAD')
+WHERE DEREF(m.address).city = 'LONDON';
+
+UPDATE members 
+SET address = (SELECT REF(a) FROM addresses a WHERE a.country='UK')
+WHERE publisher_id = 20;
+
+UPDATE members m
+SET m.address = (SELECT REF(a) FROM addresses a WHERE a.street='544 42ND STREET')
+WHERE EXISTS (SELECT 1 FROM addresses a WHERE a.city = 'NEW YORK');
+
+DROP TABLE adverts;
+
+DROP TABLE borrowers;
+
+DROP TYPE social_media_type;
+
+DROP TYPE social_media_table_type;
+
+DROP TYPE library_card_address_type;
+
+DROP TABLE regions;
+
+DROP TYPE region_type;
+
+DESCRIBE members;
+
+DESCRIBE borrower_address_type;
+
+DESCRIBE library_room_varray_type;
+
+DESCRIBE social_media_table_type;
+
+DESC books;
+
+DESC borrowers;
+
+SELECT object_name, object_type FROM user_objects;
+
+SELECT object_name FROM user_objects WHERE object_type = 'TABLE';
+
+SELECT object_name FROM user_objects WHERE object_type = 'TYPE';
+
+SELECT constraint_name, constraint_type, table_name FROM user_constraints;
+
+COLUMN object_name FORMAT A30;
+COLUMN object_type FORMAT A12;
+SELECT object_name, object_type FROM user_objects ORDER BY object_type;
+
+SELECT table_name, column_name, data_type 
+FROM user_tab_columns 
+WHERE data_type LIKE 'REF%';CREATE OR REPLACE TYPE borrower_address_type AS OBJECT (
+    street VARCHAR2(25),
+    city VARCHAR2(25),
+    country VARCHAR2(25)
+);
+/
+
+CREATE OR REPLACE TYPE library_room_type AS OBJECT (
+    room_number NUMBER,
+    capacity NUMBER,
+    description VARCHAR2(50)
+);
+/
+
+CREATE OR REPLACE TYPE library_room_varray_type AS VARRAY(10) OF library_room_type;
+/
+
+CREATE OR REPLACE TYPE library_card_address_type AS OBJECT (
+    street VARCHAR2(25),
+    city VARCHAR2(25),
+    country VARCHAR2(25)
+);
+/
+
+CREATE TABLE card_addresses OF library_card_address_type;
+
+CREATE TABLE borrowers (
+    borrower_id NUMBER(6),
+    borrower_name VARCHAR2(25),
+    library_card_address REF library_card_address_type SCOPE IS card_addresses
+);
+
+CREATE OR REPLACE TYPE region_type AS OBJECT (
+    region VARCHAR2(25),
+    country VARCHAR2(25)
+);
+/
+
+CREATE TABLE regions OF region_type;
+
+ALTER TABLE library_branches ADD (region_ref REF region_type SCOPE IS regions);
+
+INSERT INTO borrowers VALUES (101, 'JOHN DOE', 
+    (SELECT REF(b) FROM card_addresses b WHERE b.street = '111 BAY STATE ROAD'));
+
+SELECT library_card_address FROM borrowers;
+
+SELECT DEREF(library_card_address) FROM borrowers;
+
+SELECT b.borrower_name, DEREF(b.library_card_address).street FROM borrowers b;
+
+CREATE OR REPLACE TYPE social_media_type AS OBJECT (
+    media_name VARCHAR2(25),
+    contact VARCHAR2(50)
+);
+/
+
+CREATE OR REPLACE TYPE social_media_table_type AS TABLE OF social_media_type;
+/
+
+CREATE TABLE adverts (
+    advert_id NUMBER(6),
+    advert_title VARCHAR2(50),
+    description VARCHAR2(25),
+    social_media_used social_media_table_type
+)
+NESTED TABLE social_media_used STORE AS social_media_store_tab;
+
+INSERT INTO adverts VALUES (1, 'Reading Course', 'Advanced Reading', 
+    social_media_table_type(
+        social_media_type('FACEBOOK', '@readingclub'),
+        social_media_type('TWITTER', '#books')
+    ));
+
+SELECT a.advert_title, s.media_name, s.contact
+FROM adverts a, TABLE(a.social_media_used) s;
+
+INSERT INTO TABLE(SELECT social_media_used FROM adverts WHERE advert_id=1)
+VALUES (social_media_type('INSTAGRAM', '@libraryhub'));
+
+DROP TABLE borrowers;
+
+DROP TYPE library_card_address_type;
+
+DROP TYPE social_media_table_type;
+
+BEGIN
+    EXECUTE IMMEDIATE 'ALTER TABLE members DROP CONSTRAINT ck_member_firstname';
+EXCEPTION
+    WHEN OTHERS THEN NULL;
+END;
+/
+
+DROP TABLE loans;
+DROP TABLE book_offerings;
+DROP TABLE books;
+
+INSERT INTO publishers (publisher_id, publisher_name, city, industry, no_employees, revenue, training_budget)
+VALUES (80, 'PENGUIN', 'LONDON', 'PUBLISHING', 5000, 50000000, 500000.00);
+
+INSERT INTO members (member_id, member_firstname, member_surname, publisher_id)
+VALUES (9999, 'JOHN', 'SMITH', 20);
+
+UPDATE members SET address = 
+    (SELECT REF(a) FROM addresses a WHERE a.street='111 BAY STATE ROAD')
+WHERE member_id = 9999;
+
+INSERT INTO library_branches (branch_id, address, library_room, location) VALUES (
+    9, borrower_address_type('123 MAIN ST', 'LONDON', 'UK'),
+    library_room_varray_type (
+        library_room_type(1, 20, NULL),
+        library_room_type(2, 25, NULL)
+    ),
+    'UK EAST'
+);
+
+INSERT INTO adverts VALUES (10, 'Oracle Reading', '5 Day Course',
+    social_media_table_type(
+        social_media_type('LINKEDIN', 'oracle.reading'),
+        social_media_type('YOUTUBE', 'oraclechannel')
+    ));
+
+INSERT INTO borrowers VALUES (201, 'ABC CORP', 
+    library_card_address_type('123 BUSINESS RD', 'CHICAGO', 'USA'));
+
+CREATE TABLE publishers_archive AS SELECT * FROM publishers WHERE 1=0;
+
+INSERT INTO publishers_archive 
+SELECT * FROM publishers WHERE training_budget > 100000;
+
+BEGIN
+    EXECUTE IMMEDIATE 'ALTER TABLE members ADD (address REF borrower_address_type)';
+EXCEPTION
+    WHEN OTHERS THEN NULL;
+END;
+/
+
+UPDATE members 
+SET address = (SELECT REF(a) FROM addresses a WHERE a.street='7500 IMPERIAL BLVD')
+WHERE member_id = 1111;
+
+UPDATE librarians 
+SET address = (SELECT REF(a) FROM addresses a WHERE a.city='LONDON')
+WHERE librarian_id = 835;
+
+UPDATE members SET address = NULL WHERE member_id = 9999;
+
+UPDATE members m
+SET m.address = (SELECT REF(a) FROM addresses a WHERE a.street = '177 AIRPORT ROAD')
+WHERE DEREF(m.address).city = 'LONDON';
+
+UPDATE members 
+SET address = (SELECT REF(a) FROM addresses a WHERE a.country='UK')
+WHERE publisher_id = 20;
+
+UPDATE members m
+SET m.address = (SELECT REF(a) FROM addresses a WHERE a.street='544 42ND STREET')
+WHERE EXISTS (SELECT 1 FROM addresses a WHERE a.city = 'NEW YORK');
+
+DROP TABLE adverts;
+
+DROP TABLE borrowers;
+
+DROP TYPE social_media_type;
+
+DROP TYPE social_media_table_type;
+
+DROP TYPE library_card_address_type;
+
+DROP TABLE regions;
+
+DROP TYPE region_type;
+
+DESCRIBE members;
+
+DESCRIBE borrower_address_type;
+
+DESCRIBE library_room_varray_type;
+
+DESCRIBE social_media_table_type;
+
+DESC books;
+
+DESC borrowers;
+
+SELECT object_name, object_type FROM user_objects;
+
+SELECT object_name FROM user_objects WHERE object_type = 'TABLE';
+
+SELECT object_name FROM user_objects WHERE object_type = 'TYPE';
+
+SELECT constraint_name, constraint_type, table_name FROM user_constraints;
+
+COLUMN object_name FORMAT A30;
+COLUMN object_type FORMAT A12;
+SELECT object_name, object_type FROM user_objects ORDER BY object_type;
+
+SELECT table_name, column_name, data_type 
+FROM user_tab_columns 
+WHERE data_type LIKE 'REF%';CREATE OR REPLACE TYPE borrower_address_type AS OBJECT (
+    street VARCHAR2(25),
+    city VARCHAR2(25),
+    country VARCHAR2(25)
+);
+/
+
+CREATE OR REPLACE TYPE library_room_type AS OBJECT (
+    room_number NUMBER,
+    capacity NUMBER,
+    description VARCHAR2(50)
+);
+/
+
+CREATE OR REPLACE TYPE library_room_varray_type AS VARRAY(10) OF library_room_type;
+/
+
+CREATE OR REPLACE TYPE library_card_address_type AS OBJECT (
+    street VARCHAR2(25),
+    city VARCHAR2(25),
+    country VARCHAR2(25)
+);
+/
+
+CREATE TABLE card_addresses OF library_card_address_type;
+
+CREATE TABLE borrowers (
+    borrower_id NUMBER(6),
+    borrower_name VARCHAR2(25),
+    library_card_address REF library_card_address_type SCOPE IS card_addresses
+);
+
+CREATE OR REPLACE TYPE region_type AS OBJECT (
+    region VARCHAR2(25),
+    country VARCHAR2(25)
+);
+/
+
+CREATE TABLE regions OF region_type;
+
+ALTER TABLE library_branches ADD (region_ref REF region_type SCOPE IS regions);
+
+INSERT INTO borrowers VALUES (101, 'JOHN DOE', 
+    (SELECT REF(b) FROM card_addresses b WHERE b.street = '111 BAY STATE ROAD'));
+
+SELECT library_card_address FROM borrowers;
+
+SELECT DEREF(library_card_address) FROM borrowers;
+
+SELECT b.borrower_name, DEREF(b.library_card_address).street FROM borrowers b;
+
+CREATE OR REPLACE TYPE social_media_type AS OBJECT (
+    media_name VARCHAR2(25),
+    contact VARCHAR2(50)
+);
+/
+
+CREATE OR REPLACE TYPE social_media_table_type AS TABLE OF social_media_type;
+/
+
+CREATE TABLE adverts (
+    advert_id NUMBER(6),
+    advert_title VARCHAR2(50),
+    description VARCHAR2(25),
+    social_media_used social_media_table_type
+)
+NESTED TABLE social_media_used STORE AS social_media_store_tab;
+
+INSERT INTO adverts VALUES (1, 'Reading Course', 'Advanced Reading', 
+    social_media_table_type(
+        social_media_type('FACEBOOK', '@readingclub'),
+        social_media_type('TWITTER', '#books')
+    ));
+
+SELECT a.advert_title, s.media_name, s.contact
+FROM adverts a, TABLE(a.social_media_used) s;
+
+INSERT INTO TABLE(SELECT social_media_used FROM adverts WHERE advert_id=1)
+VALUES (social_media_type('INSTAGRAM', '@libraryhub'));
+
+DROP TABLE borrowers;
+
+DROP TYPE library_card_address_type;
+
+DROP TYPE social_media_table_type;
+
+BEGIN
+    EXECUTE IMMEDIATE 'ALTER TABLE members DROP CONSTRAINT ck_member_firstname';
+EXCEPTION
+    WHEN OTHERS THEN NULL;
+END;
+/
+
+DROP TABLE loans;
+DROP TABLE book_offerings;
+DROP TABLE books;
+
+INSERT INTO publishers (publisher_id, publisher_name, city, industry, no_employees, revenue, training_budget)
+VALUES (80, 'PENGUIN', 'LONDON', 'PUBLISHING', 5000, 50000000, 500000.00);
+
+INSERT INTO members (member_id, member_firstname, member_surname, publisher_id)
+VALUES (9999, 'JOHN', 'SMITH', 20);
+
+UPDATE members SET address = 
+    (SELECT REF(a) FROM addresses a WHERE a.street='111 BAY STATE ROAD')
+WHERE member_id = 9999;
+
+INSERT INTO library_branches (branch_id, address, library_room, location) VALUES (
+    9, borrower_address_type('123 MAIN ST', 'LONDON', 'UK'),
+    library_room_varray_type (
+        library_room_type(1, 20, NULL),
+        library_room_type(2, 25, NULL)
+    ),
+    'UK EAST'
+);
+
+INSERT INTO adverts VALUES (10, 'Oracle Reading', '5 Day Course',
+    social_media_table_type(
+        social_media_type('LINKEDIN', 'oracle.reading'),
+        social_media_type('YOUTUBE', 'oraclechannel')
+    ));
+
+INSERT INTO borrowers VALUES (201, 'ABC CORP', 
+    library_card_address_type('123 BUSINESS RD', 'CHICAGO', 'USA'));
+
+CREATE TABLE publishers_archive AS SELECT * FROM publishers WHERE 1=0;
+
+INSERT INTO publishers_archive 
+SELECT * FROM publishers WHERE training_budget > 100000;
+
+BEGIN
+    EXECUTE IMMEDIATE 'ALTER TABLE members ADD (address REF borrower_address_type)';
+EXCEPTION
+    WHEN OTHERS THEN NULL;
+END;
+/
+
+UPDATE members 
+SET address = (SELECT REF(a) FROM addresses a WHERE a.street='7500 IMPERIAL BLVD')
+WHERE member_id = 1111;
+
+UPDATE librarians 
+SET address = (SELECT REF(a) FROM addresses a WHERE a.city='LONDON')
+WHERE librarian_id = 835;
+
+UPDATE members SET address = NULL WHERE member_id = 9999;
+
+UPDATE members m
+SET m.address = (SELECT REF(a) FROM addresses a WHERE a.street = '177 AIRPORT ROAD')
+WHERE DEREF(m.address).city = 'LONDON';
+
+UPDATE members 
+SET address = (SELECT REF(a) FROM addresses a WHERE a.country='UK')
+WHERE publisher_id = 20;
+
+UPDATE members m
+SET m.address = (SELECT REF(a) FROM addresses a WHERE a.street='544 42ND STREET')
+WHERE EXISTS (SELECT 1 FROM addresses a WHERE a.city = 'NEW YORK');
+
+DROP TABLE adverts;
+
+DROP TABLE borrowers;
+
+DROP TYPE social_media_type;
+
+DROP TYPE social_media_table_type;
+
+DROP TYPE library_card_address_type;
+
+DROP TABLE regions;
+
+DROP TYPE region_type;
+
+DESCRIBE members;
+
+DESCRIBE borrower_address_type;
+
+DESCRIBE library_room_varray_type;
+
+DESCRIBE social_media_table_type;
+
+DESC books;
+
+DESC borrowers;
+
+SELECT object_name, object_type FROM user_objects;
+
+SELECT object_name FROM user_objects WHERE object_type = 'TABLE';
+
+SELECT object_name FROM user_objects WHERE object_type = 'TYPE';
+
+SELECT constraint_name, constraint_type, table_name FROM user_constraints;
+
+COLUMN object_name FORMAT A30;
+COLUMN object_type FORMAT A12;
+SELECT object_name, object_type FROM user_objects ORDER BY object_type;
+
+SELECT table_name, column_name, data_type 
+FROM user_tab_columns 
+WHERE data_type LIKE 'REF%';
