@@ -1,0 +1,262 @@
+SELECT m.member_id, m.member_firstname, p.publisher_name
+FROM members m
+INNER JOIN publishers p ON m.publisher_id = p.publisher_id;
+
+SELECT bo.book_offering_id, b.book_name, l.librarian_name
+FROM book_offerings bo
+INNER JOIN books b ON bo.book_id = b.book_id
+INNER JOIN librarians l ON bo.librarian_id = l.librarian_id;
+
+SELECT m.member_firstname, b.book_name, bo.start_date
+FROM members m
+INNER JOIN loans l ON m.member_id = l.member_id
+INNER JOIN book_offerings bo ON l.book_offering_id = bo.book_offering_id
+INNER JOIN books b ON bo.book_id = b.book_id;
+
+SELECT l.librarian_name, b.book_name, lb.location
+FROM librarians l
+INNER JOIN book_offerings bo ON l.librarian_id = bo.librarian_id
+INNER JOIN books b ON bo.book_id = b.book_id
+INNER JOIN library_branches lb ON bo.branch_id = lb.branch_id;
+
+SELECT m.member_firstname, b.book_name
+FROM members m, books b;
+
+SELECT l.librarian_name, bo.book_offering_id
+FROM librarians l, book_offerings bo;
+
+SELECT m.member_id, m.member_firstname, lo.book_offering_id
+FROM members m
+LEFT JOIN loans lo ON m.member_id = lo.member_id;
+
+SELECT l.librarian_name, bo.book_offering_id
+FROM librarians l
+LEFT JOIN book_offerings bo ON l.librarian_id = bo.librarian_id;
+
+SELECT m.member_id, m.member_firstname, lo.book_offering_id
+FROM loans lo
+RIGHT JOIN members m ON lo.member_id = m.member_id;
+
+SELECT l.librarian_name, bo.book_offering_id
+FROM book_offerings bo
+RIGHT JOIN librarians l ON bo.librarian_id = l.librarian_id;
+
+SELECT m.member_id, m.member_firstname, lo.book_offering_id
+FROM members m
+FULL OUTER JOIN loans lo ON m.member_id = lo.member_id;
+SELECT l.librarian_name, bo.book_offering_id
+FROM librarians l
+FULL OUTER JOIN book_offerings bo ON l.librarian_id = bo.librarian_id;
+
+SELECT member_firstname
+FROM members
+WHERE publisher_id IN (SELECT publisher_id FROM publishers WHERE training_budget > 200000);
+
+SELECT book_name
+FROM books
+WHERE subject_id IN (SELECT subject_id FROM subject_areas WHERE subject_name = 'FICTION');
+
+SELECT member_firstname
+FROM members
+WHERE publisher_id NOT IN (SELECT publisher_id FROM publishers WHERE industry = 'PRINTING');
+
+SELECT book_name
+FROM books
+WHERE subject_id NOT IN (SELECT subject_id FROM subject_areas WHERE subject_name = 'MAGAZINES');
+﻿
+SELECT m.member_id, m.member_firstname, p.publisher_name
+FROM members m
+INNER JOIN publishers p ON m.publisher_id = p.publisher_id;
+
+SELECT bo.book_offering_id, b.book_name, l.librarian_name
+FROM book_offerings bo
+INNER JOIN books b ON bo.book_id = b.book_id
+INNER JOIN librarians l ON bo.librarian_id = l.librarian_id;
+
+SELECT m.member_firstname, b.book_name, bo.start_date
+FROM members m
+INNER JOIN loans l ON m.member_id = l.member_id
+INNER JOIN book_offerings bo ON l.book_offering_id = bo.book_offering_id
+INNER JOIN books b ON bo.book_id = b.book_id;
+
+SELECT l.librarian_name, b.book_name, lb.location
+FROM librarians l
+INNER JOIN book_offerings bo ON l.librarian_id = bo.librarian_id
+INNER JOIN books b ON bo.book_id = b.book_id
+INNER JOIN library_branches lb ON bo.branch_id = lb.branch_id;
+
+SELECT m.member_firstname, b.book_name
+FROM members m, books b;
+
+SELECT l.librarian_name, bo.book_offering_id
+FROM librarians l, book_offerings bo;
+
+SELECT m.member_id, m.member_firstname, lo.book_offering_id
+FROM members m
+LEFT JOIN loans lo ON m.member_id = lo.member_id;
+
+SELECT l.librarian_name, bo.book_offering_id
+FROM librarians l
+LEFT JOIN book_offerings bo ON l.librarian_id = bo.librarian_id;
+
+SELECT m.member_id, m.member_firstname, lo.book_offering_id
+FROM loans lo
+RIGHT JOIN members m ON lo.member_id = m.member_id;
+
+SELECT l.librarian_name, bo.book_offering_id
+FROM book_offerings bo
+RIGHT JOIN librarians l ON bo.librarian_id = l.librarian_id;
+
+SELECT m.member_id, m.member_firstname, lo.book_offering_id
+FROM members m
+FULL OUTER JOIN loans lo ON m.member_id = lo.member_id;
+SELECT l.librarian_name, bo.book_offering_id
+FROM librarians l
+FULL OUTER JOIN book_offerings bo ON l.librarian_id = bo.librarian_id;
+
+SELECT member_firstname
+FROM members
+WHERE publisher_id IN (SELECT publisher_id FROM publishers WHERE training_budget > 200000);
+
+SELECT book_name
+FROM books
+WHERE subject_id IN (SELECT subject_id FROM subject_areas WHERE subject_name = 'FICTION');
+
+SELECT member_firstname
+FROM members
+WHERE publisher_id NOT IN (SELECT publisher_id FROM publishers WHERE industry = 'PRINTING');
+
+SELECT book_name
+FROM books
+WHERE subject_id NOT IN (SELECT subject_id FROM subject_areas WHERE subject_name = 'MAGAZINES');
+﻿SELECT m.member_id, m.member_firstname, p.publisher_name
+FROM members m
+INNER JOIN publishers p ON m.publisher_id = p.publisher_id;
+
+SELECT bo.book_offering_id, b.book_name, l.librarian_name
+FROM book_offerings bo
+INNER JOIN books b ON bo.book_id = b.book_id
+INNER JOIN librarians l ON bo.librarian_id = l.librarian_id;
+
+SELECT m.member_firstname, b.book_name, bo.start_date
+FROM members m
+INNER JOIN loans l ON m.member_id = l.member_id
+INNER JOIN book_offerings bo ON l.book_offering_id = bo.book_offering_id
+INNER JOIN books b ON bo.book_id = b.book_id;
+
+SELECT l.librarian_name, b.book_name, lb.location
+FROM librarians l
+INNER JOIN book_offerings bo ON l.librarian_id = bo.librarian_id
+INNER JOIN books b ON bo.book_id = b.book_id
+INNER JOIN library_branches lb ON bo.branch_id = lb.branch_id;
+
+SELECT m.member_firstname, b.book_name
+FROM members m, books b;
+
+SELECT l.librarian_name, bo.book_offering_id
+FROM librarians l, book_offerings bo;
+
+SELECT m.member_id, m.member_firstname, lo.book_offering_id
+FROM members m
+LEFT JOIN loans lo ON m.member_id = lo.member_id;
+
+SELECT l.librarian_name, bo.book_offering_id
+FROM librarians l
+LEFT JOIN book_offerings bo ON l.librarian_id = bo.librarian_id;
+
+SELECT m.member_id, m.member_firstname, lo.book_offering_id
+FROM loans lo
+RIGHT JOIN members m ON lo.member_id = m.member_id;
+
+SELECT l.librarian_name, bo.book_offering_id
+FROM book_offerings bo
+RIGHT JOIN librarians l ON bo.librarian_id = l.librarian_id;
+
+SELECT m.member_id, m.member_firstname, lo.book_offering_id
+FROM members m
+FULL OUTER JOIN loans lo ON m.member_id = lo.member_id;
+SELECT l.librarian_name, bo.book_offering_id
+FROM librarians l
+FULL OUTER JOIN book_offerings bo ON l.librarian_id = bo.librarian_id;
+
+SELECT member_firstname
+FROM members
+WHERE publisher_id IN (SELECT publisher_id FROM publishers WHERE training_budget > 200000);
+
+SELECT book_name
+FROM books
+WHERE subject_id IN (SELECT subject_id FROM subject_areas WHERE subject_name = 'FICTION');
+
+SELECT member_firstname
+FROM members
+WHERE publisher_id NOT IN (SELECT publisher_id FROM publishers WHERE industry = 'PRINTING');
+
+SELECT book_name
+FROM books
+WHERE subject_id NOT IN (SELECT subject_id FROM subject_areas WHERE subject_name = 'MAGAZINES');
+﻿
+SELECT m.member_id, m.member_firstname, p.publisher_name
+FROM members m
+INNER JOIN publishers p ON m.publisher_id = p.publisher_id;
+
+SELECT bo.book_offering_id, b.book_name, l.librarian_name
+FROM book_offerings bo
+INNER JOIN books b ON bo.book_id = b.book_id
+INNER JOIN librarians l ON bo.librarian_id = l.librarian_id;
+
+SELECT m.member_firstname, b.book_name, bo.start_date
+FROM members m
+INNER JOIN loans l ON m.member_id = l.member_id
+INNER JOIN book_offerings bo ON l.book_offering_id = bo.book_offering_id
+INNER JOIN books b ON bo.book_id = b.book_id;
+
+SELECT l.librarian_name, b.book_name, lb.location
+FROM librarians l
+INNER JOIN book_offerings bo ON l.librarian_id = bo.librarian_id
+INNER JOIN books b ON bo.book_id = b.book_id
+INNER JOIN library_branches lb ON bo.branch_id = lb.branch_id;
+
+SELECT m.member_firstname, b.book_name
+FROM members m, books b;
+
+SELECT l.librarian_name, bo.book_offering_id
+FROM librarians l, book_offerings bo;
+
+SELECT m.member_id, m.member_firstname, lo.book_offering_id
+FROM members m
+LEFT JOIN loans lo ON m.member_id = lo.member_id;
+
+SELECT l.librarian_name, bo.book_offering_id
+FROM librarians l
+LEFT JOIN book_offerings bo ON l.librarian_id = bo.librarian_id;
+
+SELECT m.member_id, m.member_firstname, lo.book_offering_id
+FROM loans lo
+RIGHT JOIN members m ON lo.member_id = m.member_id;
+
+SELECT l.librarian_name, bo.book_offering_id
+FROM book_offerings bo
+RIGHT JOIN librarians l ON bo.librarian_id = l.librarian_id;
+
+SELECT m.member_id, m.member_firstname, lo.book_offering_id
+FROM members m
+FULL OUTER JOIN loans lo ON m.member_id = lo.member_id;
+SELECT l.librarian_name, bo.book_offering_id
+FROM librarians l
+FULL OUTER JOIN book_offerings bo ON l.librarian_id = bo.librarian_id;
+
+SELECT member_firstname
+FROM members
+WHERE publisher_id IN (SELECT publisher_id FROM publishers WHERE training_budget > 200000);
+
+SELECT book_name
+FROM books
+WHERE subject_id IN (SELECT subject_id FROM subject_areas WHERE subject_name = 'FICTION');
+
+SELECT member_firstname
+FROM members
+WHERE publisher_id NOT IN (SELECT publisher_id FROM publishers WHERE industry = 'PRINTING');
+
+SELECT book_name
+FROM books
+WHERE subject_id NOT IN (SELECT subject_id FROM subject_areas WHERE subject_name = 'MAGAZINES');
